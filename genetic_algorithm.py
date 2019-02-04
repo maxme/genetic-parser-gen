@@ -1,13 +1,22 @@
 from simulating_the_simulator import test_func
 import random
 import math
+from functools import reduce
+
 
 class Chromosome:
     domains = []
     size = 0
 
-    def __init__(self, domains=[], expected_result=0, genes = None,
-                 mutation_rate = 20, mother = None, father = None):
+    def __init__(
+        self,
+        domains=[],
+        expected_result=0,
+        genes=None,
+        mutation_rate=20,
+        mother=None,
+        father=None,
+    ):
         if mother and father:
             self.__crossover(mother, father)
         else:
@@ -39,7 +48,7 @@ class Chromosome:
         """
         Simple point crossover
         """
-        self.mutation_rate  = mother.mutation_rate
+        self.mutation_rate = mother.mutation_rate
         self.expected_result = mother.expected_result
         crossover_point = random.randint(0, self.size)
         self.genes = mother.genes[:crossover_point]
@@ -62,12 +71,12 @@ class Chromosome:
     def __cmp__(self, o):
         return cmp(self.fitness, o.fitness)
 
+
 class GA:
-    def __init__(self, domains, expected_result, popsize = 50,
-                 GA_printers = None):
+    def __init__(self, domains, expected_result, popsize=50, GA_printers=None):
         self.popsize = popsize
         self.population = []
-        for i in xrange(0, popsize):
+        for i in range(0, popsize):
             c = Chromosome(domains, expected_result)
             self.population.append(c)
         self.population.sort()
@@ -95,10 +104,9 @@ class GA:
         newpop = []
         # Elitism, keep the best chromosome to the next generation
         newpop.append(self.population[0])
-        for i in xrange(1, self.popsize):
+        for i in range(1, self.popsize):
             # Selection and Crossover
-            tmpchrom = Chromosome(mother=self.__my_choice(),
-                                  father=self.__my_choice())
+            tmpchrom = Chromosome(mother=self.__my_choice(), father=self.__my_choice())
             tmpchrom.mutate()
             newpop.append(tmpchrom)
         self.population = newpop
@@ -115,25 +123,20 @@ class GA:
                 printer.refresh_screen(self.population, self.generation)
             self.generation += 1
 
+
 class GA_print_text:
     def refresh_screen(self, population, generation):
-        print "Generation:", generation
+        print("Generation:", generation)
         for i in population[:5]:
-            print i
+            print(i)
+
 
 if __name__ == "__main__":
-    domains = [
-        (1, 4),
-        (0, 2),
-        (1, 2),
-        (1, 4),
-        (0, 2),
-        (1, 2),
-        (1, 4),
-        (0, 2),
-        ]
-    a = GA(domains, # domains of input parameters
-           8,       # observed result
-           200,     # population size
-           GA_printers = [GA_print_text()])
+    domains = [(1, 4), (0, 2), (1, 2), (1, 4), (0, 2), (1, 2), (1, 4), (0, 2)]
+    a = GA(
+        domains,  # domains of input parameters
+        8,  # observed result
+        200,  # population size
+        GA_printers=[GA_print_text()],
+    )
     a.run()

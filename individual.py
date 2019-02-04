@@ -5,6 +5,7 @@ from primitives import str_primitives, re_primitives, clean_primitives
 from baseparser import BaseParser
 from operator import attrgetter
 
+
 class Individual(BaseParser):
     expected_result = {}
     mutation_rate = 0
@@ -42,15 +43,14 @@ class Individual(BaseParser):
         return l1[crossover_point:] + l2[:crossover_point]
 
     def apply_max(self):
-        self._str_ops = self._str_ops[:self.max_str]
-        self._s2l_ops = self._s2l_ops[:self.max_s2l]
-        self._clean_ops = self._clean_ops[:self.max_clean]
+        self._str_ops = self._str_ops[: self.max_str]
+        self._s2l_ops = self._s2l_ops[: self.max_s2l]
+        self._clean_ops = self._clean_ops[: self.max_clean]
 
     def crossover(self, mother, father):
         self._str_ops = self.crossover_list(mother._str_ops, father._str_ops)
         self._s2l_ops = self.crossover_list(mother._s2l_ops, father._s2l_ops)
-        self._clean_ops = self.crossover_list(mother._clean_ops,
-                                              father._clean_ops)
+        self._clean_ops = self.crossover_list(mother._clean_ops, father._clean_ops)
         self.constraints()
 
     def mutate_list(self, l, all):
@@ -59,16 +59,16 @@ class Individual(BaseParser):
             i, r = 0, 0
         else:
             i = randint(0, len(l) - 1)
-        if r < 10: # add
+        if r < 10:  # add
             l.insert(i, choice(all))
-        elif r > 90: # delete
+        elif r > 90:  # delete
             del l[i]
-        else: #modify
+        else:  # modify
             l[i] = choice(all)
 
-    def mutate(self):
+    def mutate(self, force=False):
         test = randint(0, 100)
-        if test < self.mutation_rate:
+        if test < self.mutation_rate or force:
             r = randint(0, 2)
             if r == 0:
                 self.mutate_list(self._str_ops, str_primitives)
@@ -83,11 +83,14 @@ class Individual(BaseParser):
         c = self.criterias()
         self.fitness = compare_criterias(self, self.expected_result)
 
-    def __cmp__(self, o):
-        return cmp(self.fitness, o.fitness)
+    def __hash__(self):
+        return hash(self.st())
 
     def __str__(self):
-        return str(round(self.fitness, 5)) #+ ":" + self.st() #+ ":" + str(self.parsed)
+        return str(
+            round(self.fitness, 5)
+        )  #  + ":" + self.st()  # + ":" + str(self.parsed)
+
 
 if __name__ == "__main__":
     pass

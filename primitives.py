@@ -88,7 +88,6 @@ def merge(n=1):
 for i in range(1, 10):
     locals()["clean_merge%d" % i] = merge(i)
 
-
 str_primitives = [eval(i) for i in filter(lambda x: x.startswith("str"), dir())]
 clean_primitives = [eval(i) for i in filter(lambda x: x.startswith("clean"), dir())]
 re_primitives = [eval(i) for i in filter(lambda x: x.startswith("s2l"), dir())]
